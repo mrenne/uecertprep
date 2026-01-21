@@ -82,7 +82,8 @@
             title: 'Editor Navigation',
             icon: 'monitor',
             description: 'Master the viewport, content browser, and details panel. Learn the essential shortcuts to navigate the 3D space with speed and precision.',
-            duration: '12:30'
+            duration: '12:30',
+            videoId: '69QK0RjjpcE'
           },
           {
             id: 'file-management',
@@ -171,18 +172,12 @@
                 </div>
               ) : (
                 <div className="w-full h-full bg-black flex items-center justify-center relative">
-                  <p className="text-slate-500 animate-pulse">Loading YouTube Player...</p>
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); setIsPlaying(false); }}
-                    className="absolute top-4 right-4 text-slate-500 hover:text-white"
-                  >
-                    <Icon name="x" size={24} />
-                  </button>
+                 
                   {/* TO ADD REAL VIDEO:
                       1. Remove the <p> and <button> above.
                       2. Uncomment the iframe below.
                       3. Replace ${videoId} with your actual YouTube ID in the section data or pass it as a prop.
-                      
+                   */}   
                   <iframe 
                     width="100%" 
                     height="100%" 
@@ -191,8 +186,7 @@
                     frameBorder="0" 
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                     allowFullScreen
-                  ></iframe> 
-                  */}
+                  ></iframe>
                 </div>
               )}
             </div>
