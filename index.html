@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UE Fundamentals - Certification Prep</title>
+    
+    <!-- React and ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX transformation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom Styles -->
+    <style>
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .scrollbar-hide {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        
+        body {
+            background-color: #020617; /* slate-950 */
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- Icons Component ---
+        // Replacing Lucide imports with internal SVG definitions to keep this file single and portable
+        const Icon = ({ name, size = 24, className = "" }) => {
+            const icons = {
+                monitor: <path d="M2 3h20v14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V3m6 18h8m-4-4v4" />,
+                layers: <path d="m12 2 10 5-10 5-10-5 10-5M2 17l10 5 10-5M2 12l10 5 10-5" />,
+                cpu: <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM9 9h6v6H9zM15 2v2M9 2v2M2 9h2M2 15h2M22 9h-2M22 15h-2M15 20v2M9 20v2" />,
+                box: <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16zM3.27 6.96 12 12.01 20.73 6.96M12 22.08 12 12" />,
+                zap: <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" />,
+                bookOpen: <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />,
+                film: <><rect width="18" height="18" x="3" y="3" rx="2" /><path d="M7 3v18M17 3v18M3 12h18M3 7h4M3 17h4M17 7h4M17 17h4" /></>,
+                music: <><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></>,
+                layout: <><rect width="18" height="18" x="3" y="3" rx="2" /><path d="M3 9h18M9 21V9" /></>,
+                play: <polygon points="5 3 19 12 5 21 5 3" />,
+                menu: <><line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" /></>,
+                x: <path d="M18 6 6 18M6 6l12 12" />,
+                chevronRight: <path d="m9 18 6-6-6-6" />
+            };
+
+            return (
+                <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    width={size} 
+                    height={size} 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    className={className}
+                >
+                    {icons[name] || null}
+                </svg>
+            );
+        };
+
+        // --- Data ---
+        const sections = [
+          {
+            id: 'editor-navigation',
+            title: 'Editor Navigation',
+            icon: 'monitor',
+            description: 'Master the viewport, content browser, and details panel. Learn the essential shortcuts to navigate the 3D space with speed and precision.',
+            duration: '12:30'
+          },
+          {
+            id: 'file-management',
+            title: 'File Management',
+            icon: 'layers',
+            description: 'Best practices for organizing your project folder structure, naming conventions, and managing assets to keep your project scalable and clean.',
+            duration: '08:45'
+          },
+          {
+            id: 'blueprint-scripting',
+            title: 'Blueprint Scripting',
+            icon: 'cpu',
+            description: 'Introduction to visual scripting. Understand nodes, variables, functions, and flow control to create interactive gameplay mechanics without writing code.',
+            duration: '25:15'
+          },
+          {
+            id: 'materials',
+            title: 'Materials',
+            icon: 'box',
+            description: 'Create physically based materials. Learn about textures, shaders, material instances, and the material graph to give surfaces realistic detail.',
+            duration: '18:20'
+          },
+          {
+            id: 'lighting',
+            title: 'Lighting',
+            icon: 'zap',
+            description: 'Explore static, stationary, and dynamic lighting. Master Lumen, light baking, and post-processing volumes to set the perfect mood.',
+            duration: '22:10'
+          },
+          {
+            id: 'world-building',
+            title: 'World Building',
+            icon: 'bookOpen',
+            description: 'Use Landscape tools and Foliage mode to sculpt terrains and populate environments. Learn about level streaming and world partition.',
+            duration: '30:00'
+          },
+          {
+            id: 'sequencer',
+            title: 'Sequencer',
+            icon: 'film',
+            description: 'Create cinematic cutscenes and linear animations. Learn keyframing, camera cuts, and rendering movies using the Sequencer tool.',
+            duration: '15:50'
+          },
+          {
+            id: 'metasounds',
+            title: 'MetaSounds',
+            icon: 'music',
+            description: 'Next-generation audio. Build complex procedural audio systems and interactive soundscapes directly within the engine.',
+            duration: '14:25'
+          },
+          {
+            id: 'niagara-vfx',
+            title: 'Niagara Visual Effects',
+            icon: 'zap', 
+            description: 'Design particle systems for fire, smoke, and magic. Understand emitters, systems, and modules to create stunning visual effects.',
+            duration: '20:40'
+          },
+          {
+            id: 'umg-ui',
+            title: 'UMG UI',
+            icon: 'layout',
+            description: 'Build user interfaces with Unreal Motion Graphics (UMG). Create menus, HUDs, and interactive widgets for your game.',
+            duration: '16:30'
+          },
+        ];
+
+        // --- Components ---
+
+        const VideoPlaceholder = ({ title, duration }) => {
+          const [isPlaying, setIsPlaying] = useState(false);
+
+          return (
+            <div className="w-full aspect-video bg-slate-900 rounded-lg overflow-hidden border border-slate-700 shadow-lg relative group">
+              {!isPlaying ? (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-800/50 group-hover:bg-slate-800/40 transition-colors cursor-pointer" onClick={() => setIsPlaying(true)}>
+                    {/* Thumbnail Mockup */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-slate-900 to-slate-800 opacity-90 z-0"></div>
+                    
+                    {/* Play Button */}
+                    <div className="z-10 w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-300">
+                      <Icon name="play" className="text-white ml-1" size={32} />
+                    </div>
+                    
+                    <p className="z-10 mt-4 text-slate-300 font-medium tracking-wide">Watch Tutorial</p>
+                    <span className="z-10 mt-2 text-xs bg-black/60 px-2 py-1 rounded text-slate-400 font-mono">{duration}</span>
+                </div>
+              ) : (
+                <div className="w-full h-full bg-black flex items-center justify-center relative">
+                  <p className="text-slate-500 animate-pulse">Loading YouTube Player...</p>
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); setIsPlaying(false); }}
+                    className="absolute top-4 right-4 text-slate-500 hover:text-white"
+                  >
+                    <Icon name="x" size={24} />
+                  </button>
+                  {/* TO ADD REAL VIDEO:
+                      1. Remove the <p> and <button> above.
+                      2. Uncomment the iframe below.
+                      3. Replace ${videoId} with your actual YouTube ID in the section data or pass it as a prop.
+                      
+                  <iframe 
+                    width="100%" 
+                    height="100%" 
+                    src={`https://www.youtube.com/embed/YOUR_VIDEO_ID?autoplay=1`} 
+                    title={title} 
+                    frameBorder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowFullScreen
+                  ></iframe> 
+                  */}
+                </div>
+              )}
+            </div>
+          );
+        };
+
+        const App = () => {
+          const [activeSection, setActiveSection] = useState(sections[0].id);
+          const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+          const scrollToSection = (id) => {
+            const element = document.getElementById(id);
+            if (element) {
+              element.scrollIntoView({ behavior: 'smooth' });
+              setActiveSection(id);
+              setIsMobileMenuOpen(false);
+            }
+          };
+
+          useEffect(() => {
+            const handleScroll = () => {
+              const scrollPosition = window.scrollY + 100;
+              
+              for (const section of sections) {
+                const element = document.getElementById(section.id);
+                if (element && element.offsetTop <= scrollPosition && (element.offsetTop + element.offsetHeight) > scrollPosition) {
+                  setActiveSection(section.id);
+                }
+              }
+            };
+
+            window.addEventListener('scroll', handleScroll);
+            return () => window.removeEventListener('scroll', handleScroll);
+          }, []);
+
+          return (
+            <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-blue-500/30">
+              
+              {/* Mobile Header */}
+              <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 z-50 flex items-center justify-between px-4">
+                <div className="font-bold text-lg tracking-tight text-white flex items-center gap-2">
+                  <div className="w-8 h-8 bg-blue-600 rounded-md flex items-center justify-center font-bold text-xl">U</div>
+                  UE Fundamentals
+                </div>
+                <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 text-slate-400 hover:text-white">
+                  <Icon name={isMobileMenuOpen ? "x" : "menu"} size={24} />
+                </button>
+              </div>
+
+              {/* Mobile Navigation Menu */}
+              {isMobileMenuOpen && (
+                <div className="fixed inset-0 top-16 bg-slate-950 z-40 lg:hidden overflow-y-auto pb-8">
+                  <nav className="p-4 space-y-1">
+                    {sections.map((section) => (
+                      <button
+                        key={section.id}
+                        onClick={() => scrollToSection(section.id)}
+                        className={`w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 transition-colors ${
+                          activeSection === section.id 
+                            ? 'bg-blue-600/10 text-blue-400 border border-blue-600/20' 
+                            : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200'
+                        }`}
+                      >
+                        <Icon name={section.icon} size={20} />
+                        <span className="font-medium">{section.title}</span>
+                      </button>
+                    ))}
+                  </nav>
+                </div>
+              )}
+
+              <div className="flex max-w-7xl mx-auto pt-16 lg:pt-0">
+                
+                {/* Desktop Sidebar Navigation */}
+                <aside className="hidden lg:block w-72 fixed h-screen top-0 left-auto border-r border-slate-800 overflow-y-auto bg-slate-950 z-10 scrollbar-hide">
+                  <div className="p-8 pb-4">
+                    <div className="flex items-center gap-3 mb-2">
+                       <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-2xl text-white shadow-lg shadow-blue-900/20">U</div>
+                       <div>
+                         <h1 className="font-bold text-xl text-white tracking-tight leading-none">UE Fundamentals</h1>
+                         <p className="text-xs text-slate-500 font-medium mt-1">Certification Prep</p>
+                       </div>
+                    </div>
+                  </div>
+                  
+                  <nav className="px-4 py-2 space-y-1">
+                    {sections.map((section) => (
+                      <button
+                        key={section.id}
+                        onClick={() => scrollToSection(section.id)}
+                        className={`w-full group flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                          activeSection === section.id
+                            ? 'bg-blue-600 text-white shadow-md shadow-blue-900/20'
+                            : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className={`${activeSection === section.id ? 'text-blue-200' : 'text-slate-500 group-hover:text-slate-400'}`}>
+                            <Icon name={section.icon} size={20} />
+                          </span>
+                          {section.title}
+                        </div>
+                        {activeSection === section.id && <Icon name="chevronRight" size={14} className="opacity-75" />}
+                      </button>
+                    ))}
+                  </nav>
+
+                  <div className="px-8 mt-8 pb-8">
+                    <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                        <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Progress</h4>
+                        <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                            <div className="h-full bg-blue-600 w-1/3 rounded-full"></div>
+                        </div>
+                        <p className="text-xs text-slate-500 mt-2">3 of 10 Modules Complete</p>
+                    </div>
+                  </div>
+                </aside>
+
+                {/* Main Content */}
+                <main className="flex-1 lg:ml-72 min-h-screen">
+                    {/* Hero / Intro Area */}
+                    <div className="px-6 py-12 lg:px-12 lg:py-16 border-b border-slate-800 bg-slate-900/30">
+                        <div className="max-w-3xl">
+                            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">Unreal Engine 3D Fundamentals</h2>
+                            <p className="text-lg text-slate-400 leading-relaxed">
+                                A comprehensive video series designed to prepare students and teachers for the official certification. 
+                                Follow along with the modules below to master the core concepts of the engine.
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Tutorial Feed */}
+                    <div className="px-6 py-8 lg:px-12 lg:py-12 space-y-16 lg:space-y-24">
+                        {sections.map((section, index) => (
+                        <div key={section.id} id={section.id} className="scroll-mt-24 lg:scroll-mt-8">
+                            <div className="flex items-baseline gap-4 mb-4">
+                                <span className="text-sm font-mono text-blue-500 font-bold">0{index + 1}</span>
+                                <h3 className="text-2xl font-semibold text-slate-100">{section.title}</h3>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                                {/* Video Column */}
+                                <div className="lg:col-span-3">
+                                    <VideoPlaceholder title={section.title} duration={section.duration} />
+                                </div>
+
+                                {/* Text Column */}
+                                <div className="lg:col-span-2 flex flex-col justify-center">
+                                    <div className="bg-slate-900/50 rounded-xl p-6 border border-slate-800/50 hover:border-slate-700 transition-colors">
+                                        <h4 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                            <Icon name="bookOpen" size={14} className="text-blue-500"/>
+                                            Overview
+                                        </h4>
+                                        <p className="text-slate-400 leading-relaxed text-sm lg:text-base">
+                                            {section.description}
+                                        </p>
+                                        
+                                        <div className="mt-6 pt-6 border-t border-slate-800 flex items-center gap-4">
+                                            <button className="text-xs font-semibold text-blue-400 hover:text-blue-300 uppercase tracking-wide flex items-center gap-1 transition-colors">
+                                                Resources <Icon name="chevronRight" size={12}/>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        ))}
+                    </div>
+
+                    <footer className="mt-20 py-12 border-t border-slate-800 text-center text-slate-500 text-sm">
+                        <p>&copy; {new Date().getFullYear()} UE Fundamentals Certification Prep.</p>
+                        <p className="mt-2">Not affiliated with Epic Games.</p>
+                    </footer>
+                </main>
+              </div>
+            </div>
+          );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
